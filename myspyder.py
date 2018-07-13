@@ -100,7 +100,7 @@ def search_xiecheng(browser,url,fout):
     #initialize
     try:
         browser.get(url)
-        wait = WebDriverWait(browser,20)
+        wait = WebDriverWait(browser,10)
         #print('successful!')
     except Exception as e:
         print(e)
@@ -113,7 +113,7 @@ def search_xiecheng(browser,url,fout):
         #print(string2)
     except:
         try:
-            string = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'flight-num'))).text
+            string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'flight-num'))).text
             num = int(re.findall('\d+',string)[0]) + 1
         except:
             try:
