@@ -1,0 +1,5 @@
+num:visibility 和 presence没有区别 228条
+num:改为find_element
+结论：num不用改
+.search_box_tag模块：
+去掉等待：[52秒, 228条] [54秒,228条] [69秒,228条,有错] [51s,228,True] [53s,228,True] [81s,160,True]

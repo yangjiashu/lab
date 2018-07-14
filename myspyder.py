@@ -113,24 +113,25 @@ def search_xiecheng(browser,url,fout):
 #        print(string2)
 #    except:
     try:
-        string = browser.find_element_by_css_selector('.flight-num').text
-       # string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME,'flight-num'))).text
+        #string = browser.find_element_by_css_selector('.flight-num').text
+        string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME,'flight-num'))).text
         num = int(re.findall('\d+',string)[0]) + 1
     except:
         return
-            
+    
+    print(str(num) + '条航班信息')        
     for i in range(0, 5):
         js = "var q=document.documentElement.scrollTop=10000"
         browser.execute_script(js)
         time.sleep(0.2)
     
     
-    try:
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.search_box_tag:first-child')))
-    except:
-        pass
+#    try:
+#        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.search_box_tag:first-child')))
+#    except:
+#        pass
     
-    print(str(num) + '条航班信息')
+    
 #    iterate to get data
     for i in range(1,num):
 #        try:
@@ -146,6 +147,8 @@ def search_xiecheng(browser,url,fout):
                'way','staycity','staytime','share','price','discount']
         data = {} #store the data we need
         
+        if i < num / 5:
+            time.sleep(0.1)
         #company
         try:
             company1 = browser.find_element_by_css_selector(
@@ -309,7 +312,7 @@ def search_xiecheng(browser,url,fout):
             
         #output
         writer = csv.DictWriter(fout,fieldnames=field)
-        if not (data['company']=='unknown' and data['price'] == 'unknown' and data['leavetime']=='unknown'):
+        if not (data['company']=='unknown':
             writer.writerow(data)
 if __name__ == '__main__':                  
     #initial
@@ -345,6 +348,7 @@ if __name__ == '__main__':
     f_couple_city = open('./couple_city_sample.txt','r')
     Usetime = targetDateStr + time.strftime('-%Y%m%d-%Hh', time.localtime(time.time()))
     count = 1
+    starttime = time.clock()
     with open(Usetime+'.csv','w',encoding='utf-8') as fout:
         for line in f_couple_city.readlines():
             line = line.strip().split(',')
@@ -357,6 +361,8 @@ if __name__ == '__main__':
             #print(targetDateStr)
             search_xiecheng(browser,url,fout)
             #print('successful!')
+    endtime = time.clock()
+    print(endtime-starttime)
     f_couple_city.close()
     browser.close()
     
