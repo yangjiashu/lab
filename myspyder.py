@@ -100,29 +100,24 @@ def search_xiecheng(browser,url,fout):
     #initialize
     try:
         browser.get(url)
-        wait = WebDriverWait(browser,10)
+        wait = WebDriverWait(browser,5)
         #print('successful!')
     except Exception as e:
         print(e)
     
-    
+    time.sleep(1)
+#    try:
+#        string = wait.until(EC.presence_of_element_located((By.ID,'J_flight_num')))
+#        num = int(re.findall('\d+',string)[0]) + 1
+#        print(string)
+#        print(string2)
+#    except:
     try:
-        string = wait.until(EC.visibility_of_element_located((By.ID, 'J_flight_num'))).text
+        string = browser.find_element_by_css_selector('.flight-num').text
+       # string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME,'flight-num'))).text
         num = int(re.findall('\d+',string)[0]) + 1
-        #print(string)
-        #print(string2)
     except:
-        try:
-            string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'flight-num'))).text
-            num = int(re.findall('\d+',string)[0]) + 1
-        except:
-            try:
-                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.search_box_tag')))
-                print('获取条目失败')
-                pass
-            except:    
-                print('无航班')
-                pass
+        return
             
     for i in range(0, 5):
         js = "var q=document.documentElement.scrollTop=10000"
@@ -131,13 +126,12 @@ def search_xiecheng(browser,url,fout):
     
     
     try:
-        wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME,'search_box_tag')))
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.search_box_tag:first-child')))
     except:
         pass
     
     print(str(num) + '条航班信息')
 #    iterate to get data
-    time.sleep(0.5)
     for i in range(1,num):
 #        try:
 #            wait.until(EC.presence_of_all_elements_located((By.ID,'J_flightlist2')))
@@ -185,8 +179,8 @@ def search_xiecheng(browser,url,fout):
                 pass
             pass
         pass
-    
-            
+        if i < num / 5:
+            time.sleep(0.1)
         #number
         try:
             number1 = browser.find_element_by_css_selector(
@@ -218,7 +212,7 @@ def search_xiecheng(browser,url,fout):
                 pass
             pass
         pass
-        
+
         #way
         try:
             way = browser.find_element_by_css_selector(
@@ -249,6 +243,7 @@ def search_xiecheng(browser,url,fout):
             data['share'] = 'noshare'
             pass
         
+
         #model
         try:
             model = browser.find_element_by_css_selector(
@@ -261,7 +256,9 @@ def search_xiecheng(browser,url,fout):
                 data['model'] = model
             except:
                 pass
-        
+            
+        if i < num / 5:
+            time.sleep(0.1) 
         #leavetime
         try:
             leavetime = browser.find_element_by_css_selector(
@@ -312,7 +309,7 @@ def search_xiecheng(browser,url,fout):
             
         #output
         writer = csv.DictWriter(fout,fieldnames=field)
-        if not data['company']=='unknown':
+        if not (data['company']=='unknown' and data['price'] == 'unknown' and data['leavetime']=='unknown'):
             writer.writerow(data)
 if __name__ == '__main__':                  
     #initial
