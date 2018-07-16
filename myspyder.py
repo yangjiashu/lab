@@ -112,13 +112,13 @@ def search_xiecheng(browser,url,fout):
 #        print(string)
 #        print(string2)
 #    except:
+    totalnum = 0
     try:
         #string = browser.find_element_by_css_selector('.flight-num').text
         string = wait.until(EC.visibility_of_element_located((By.CLASS_NAME,'flight-num'))).text
         num = int(re.findall('\d+',string)[0]) + 1
     except:
         return
-    
     print(str(num) + '条航班信息')        
     for i in range(0, 5):
         js = "var q=document.documentElement.scrollTop=10000"
@@ -312,8 +312,9 @@ def search_xiecheng(browser,url,fout):
             
         #output
         writer = csv.DictWriter(fout,fieldnames=field)
-        if not (data['company']=='unknown':
+        if not data['company']=='unknown':
             writer.writerow(data)
+    return num
 if __name__ == '__main__':                  
     #initial
     chrome_options = webdriver.ChromeOptions()                                          
@@ -348,6 +349,7 @@ if __name__ == '__main__':
     f_couple_city = open('./couple_city_sample.txt','r')
     Usetime = targetDateStr + time.strftime('-%Y%m%d-%Hh', time.localtime(time.time()))
     count = 1
+    totalnum = 0
     starttime = time.clock()
     with open(Usetime+'.csv','w',encoding='utf-8') as fout:
         for line in f_couple_city.readlines():
@@ -359,10 +361,11 @@ if __name__ == '__main__':
             url = 'http://flights.ctrip.com/booking/{start}-{end}-day-1.html?DDate1={date}'.format(\
                                                 start=start,end=end,date=targetDateStr)
             #print(targetDateStr)
-            search_xiecheng(browser,url,fout)
+            totalnum += search_xiecheng(browser,url,fout)
             #print('successful!')
     endtime = time.clock()
-    print(endtime-starttime)
+    print('运行时间：' + str(endtime-starttime))
+    print('总条目：' + str(totalnum))
     f_couple_city.close()
     browser.close()
     
